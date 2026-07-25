@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Atmosphere, CropCorners, GlassMark, Wordmark } from '@/components/ui';
 import { jobKey } from '@/lib/messaging';
-import type { DownloadProgress, Rendition, VideoSource } from '@/lib/types';
+import type {
+  DownloadJob,
+  DownloadProgress,
+  Rendition,
+  VideoSource,
+} from '@/lib/types';
 import { formatBytes, formatDuration } from '@/lib/format';
 import { runDownload } from '@/lib/engine/download';
 import { PickerAbortError, pickFileSink, toFileName } from '@/lib/engine/sink';
 import { fetchRenditions } from '@/lib/engine/playlist';
+import { resolveVodSource } from '@/lib/kick/resolve';
 
 type Stage =
   | { k: 'loading' }
@@ -36,13 +42,14 @@ export default function App() {
       const jobId = new URLSearchParams(location.search).get('job');
       if (!jobId) return setStage({ k: 'missing' });
       const rec = await browser.storage.session.get(jobKey(jobId));
-      const s = rec[jobKey(jobId)] as VideoSource | undefined;
-      if (!s) return setStage({ k: 'missing' });
-      setSource(s);
-      document.title = s.title ? `${s.title} · vodka` : 'vodka';
+      const job = rec[jobKey(jobId)] as DownloadJob | undefined;
+      if (!job?.target) return setStage({ k: 'missing' });
       setStage({ k: 'resolving' });
       try {
-        const list = await fetchRenditions(s.masterUrl);
+        const src = job.source ?? (await resolveVodSource(job.target));
+        setSource(src);
+        document.title = src.title ? `${src.title} · vodka` : 'vodka';
+        const list = await fetchRenditions(src.masterUrl);
         if (list.length === 0) throw new Error('Kalite bulunamadı');
         setRenditions(list);
         setSelected(0);
@@ -121,7 +128,7 @@ export default function App() {
         <div className="mt-6 flex-1">
           {stage.k === 'loading' && <Ghost label="yükleniyor" />}
           {stage.k === 'missing' && <Missing />}
-          {stage.k === 'resolving' && <Ghost label="kaliteler çözümleniyor" />}
+          {stage.k === 'resolving' && <Ghost label="kaynak çözümleniyor" />}
           {stage.k === 'resolveError' && (
             <Failure message={stage.message} onRetry={() => location.reload()} />
           )}

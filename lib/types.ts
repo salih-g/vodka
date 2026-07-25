@@ -44,6 +44,13 @@ export interface VideoSource {
   thumbnail?: string;
 }
 
+/** A download job handed from the popup to the downloader page. */
+export interface DownloadJob {
+  target: KickTarget;
+  /** Pre-resolved source, when the popup already resolved it. */
+  source?: VideoSource;
+}
+
 export type DownloadPhase =
   | 'idle'
   | 'resolving'

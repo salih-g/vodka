@@ -1,30 +1,21 @@
 import { fetchVodSource } from '@/lib/kick/api';
-import { classifyKickUrl } from '@/lib/kick/classify';
-import type { DetectResponse, RuntimeMessage } from '@/lib/messaging';
+import type { RuntimeMessage } from '@/lib/messaging';
 
 /**
- * Runs on kick.com. Resolves the current page's VOD source on demand — the
- * fetch is same-origin here, so it rides the user's session and never trips
- * Cloudflare. The heavy download happens elsewhere (the downloader page).
+ * Runs on kick.com purely as a same-origin resolve fallback. Detection and the
+ * primary API call now happen in the extension context (popup/downloader), so
+ * the extension works on already-open tabs and for pasted links without a tab.
+ * This only kicks in if the extension-origin API call is blocked (e.g.
+ * Cloudflare) and a kick.com tab happens to be open.
  */
 export default defineContentScript({
   matches: ['*://kick.com/*', '*://*.kick.com/*'],
   main() {
     browser.runtime.onMessage.addListener((message: RuntimeMessage) => {
-      if (message?.type === 'GET_DETECTION') {
-        return detect();
+      if (message?.type === 'RESOLVE') {
+        return fetchVodSource(message.target).catch(() => null);
       }
       return undefined;
     });
   },
 });
-
-async function detect(): Promise<DetectResponse> {
-  const target = classifyKickUrl(location.href);
-  if (!target || target.kind !== 'vod') return null;
-  try {
-    return await fetchVodSource(target);
-  } catch {
-    return null;
-  }
-}

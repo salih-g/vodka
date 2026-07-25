@@ -1,25 +1,28 @@
-import type { VideoSource } from '@/lib/types';
+import type { KickTarget, VideoSource } from '@/lib/types';
 
 /**
- * Typed message protocol between contexts. Kept intentionally small — only
- * control messages cross the IPC boundary, never media buffers.
+ * Typed message protocol between contexts. Only small control messages cross
+ * the IPC boundary — never media buffers.
  */
 
-/** popup -> content script (of the active kick.com tab). */
-export interface DetectRequest {
-  type: 'GET_DETECTION';
+/** popup/downloader -> content script (of an open kick.com tab): same-origin resolve. */
+export interface ResolveRequest {
+  type: 'RESOLVE';
+  target: KickTarget;
 }
 
-/** popup -> background service worker. */
+/** popup -> background service worker: open the downloader for a target. */
 export interface OpenDownloaderRequest {
   type: 'OPEN_DOWNLOADER';
-  source: VideoSource;
+  target: KickTarget;
+  /** Optional pre-resolved source (popup preview), lets the downloader skip a re-resolve. */
+  source?: VideoSource;
 }
 
-export type RuntimeMessage = DetectRequest | OpenDownloaderRequest;
+export type RuntimeMessage = ResolveRequest | OpenDownloaderRequest;
 
-/** content script -> popup: the detection result (null when not a VOD). */
-export type DetectResponse = VideoSource | null;
+/** content script -> caller: resolved source, or null on failure. */
+export type ResolveResponse = VideoSource | null;
 
 /** background -> popup: acknowledgement after opening the downloader page. */
 export interface OpenDownloaderResponse {

@@ -40,6 +40,28 @@ describe('classifyKickUrl', () => {
     expect(classifyKickUrl('not a url')).toBeNull();
     expect(classifyKickUrl('https://kick.com/x/videos/not-a-uuid')).toBeNull();
   });
+
+  test('tolerates looser /video(s)/{uuid} shapes', () => {
+    const uuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+    expect(classifyKickUrl(`https://kick.com/videos/${uuid}`)).toMatchObject({
+      kind: 'vod',
+      id: uuid,
+    });
+    expect(classifyKickUrl(`https://kick.com/video/${uuid}`)).toMatchObject({
+      kind: 'vod',
+      id: uuid,
+    });
+    expect(classifyKickUrl(`https://kick.com/xqc/video/${uuid}`)).toMatchObject({
+      kind: 'vod',
+      slug: 'xqc',
+      id: uuid,
+    });
+  });
+
+  test('does not treat a bare uuid off a video path as a VOD', () => {
+    const uuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+    expect(classifyKickUrl(`https://kick.com/xqc/${uuid}`)).toBeNull();
+  });
 });
 
 describe('formatDuration', () => {

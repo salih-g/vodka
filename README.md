@@ -41,8 +41,10 @@ no DRM. Downloading a multi-hour VOD "properly" comes down to one rule:
 | Area | State |
 | --- | --- |
 | VOD detection + master-playlist resolution | ✅ |
-| Popup + downloader UI shell | ✅ |
-| Quality enumeration + streaming download engine | 🚧 in progress |
+| Quality enumeration (all renditions) | ✅ |
+| Constant-memory HLS → MP4 streaming engine | ✅ |
+| Capture-deck popup + downloader UI | ✅ |
+| Live end-to-end run against a real VOD | 🚧 pending test |
 
 ## Development
 

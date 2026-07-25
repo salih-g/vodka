@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+/* Design tokens — Kick-adjacent neon green on near-black ink surfaces. */
+@theme {
+  --color-brand-300: #86ff5c;
+  --color-brand-400: #6dff3f;
+  --color-brand-500: #53fc18;
+  --color-brand-600: #34d400;
+
+  --color-ink-950: #09090b;
+  --color-ink-900: #0f0f11;
+  --color-ink-800: #17171a;
+  --color-ink-700: #26262b;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  background-color: var(--color-ink-950);
+  font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

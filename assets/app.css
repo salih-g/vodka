@@ -1,16 +1,47 @@
 @import 'tailwindcss';
 
-/* Design tokens — Kick-adjacent neon green on near-black ink surfaces. */
-@theme {
-  --color-brand-300: #86ff5c;
-  --color-brand-400: #6dff3f;
-  --color-brand-500: #53fc18;
-  --color-brand-600: #34d400;
+/* ── Fonts (bundled, self-hosted) ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Martian Mono';
+  src: url('/fonts/martian-mono.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  src: url('/fonts/schibsted-grotesk.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
 
-  --color-ink-950: #09090b;
-  --color-ink-900: #0f0f11;
-  --color-ink-800: #17171a;
-  --color-ink-700: #26262b;
+/* ── Design tokens ────────────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Acid neon — Kick-adjacent, used sharply against ink. */
+  --color-brand-300: #9dff78;
+  --color-brand-400: #7bff4d;
+  --color-brand-500: #53fc18;
+  --color-brand-600: #3ad400;
+  --color-brand-700: #2ba300;
+
+  /* Ink surfaces */
+  --color-ink-950: #08090a;
+  --color-ink-900: #0d0f10;
+  --color-ink-850: #121517;
+  --color-ink-800: #171b1d;
+  --color-ink-700: #232a2d;
+  --color-ink-600: #333c40;
+
+  --color-signal-amber: #ffb020;
+  --color-signal-red: #ff4d4d;
+
+  --color-fg: #e9ede9;
+  --color-muted: #838d86;
+  --color-dim: #4c544e;
 }
 
 :root {
@@ -21,6 +52,94 @@ html,
 body {
   margin: 0;
   background-color: var(--color-ink-950);
-  font-family:
-    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Atmosphere: film grain + top neon bloom ──────────────────────────── */
+.fx-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+}
+.fx-bloom {
+  background: radial-gradient(
+    60% 42% at 50% -6%,
+    color-mix(in oklab, var(--color-brand-500) 22%, transparent),
+    transparent 70%
+  );
+}
+
+/* ── Neon helpers ─────────────────────────────────────────────────────── */
+.text-glow {
+  text-shadow: 0 0 12px color-mix(in oklab, var(--color-brand-500) 55%, transparent);
+}
+.glow-ring {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-brand-500) 40%, transparent),
+    0 0 22px -4px color-mix(in oklab, var(--color-brand-500) 60%, transparent);
+}
+
+/* Scanline sheen used on meters/progress */
+.fx-scan {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Indeterminate shimmer sweep */
+@keyframes sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+.fx-sweep {
+  animation: sweep 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Record dot pulse */
+@keyframes rec {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-brand-500) 60%, transparent);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+.fx-rec {
+  animation: rec 1.3s ease-in-out infinite;
+}
+
+/* Staggered entrance */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fx-rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-sweep,
+  .fx-rec,
+  .fx-rise {
+    animation: none;
+  }
 }

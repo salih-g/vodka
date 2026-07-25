@@ -2,7 +2,7 @@
   "name": "vodka",
   "description": "Chrome extension to download Kick VODs as MP4 in any quality — any length, constant memory.",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
     "dev": "wxt",

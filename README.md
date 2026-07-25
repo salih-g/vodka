@@ -8,6 +8,8 @@ A Manifest V3 Chrome extension. Detects the VOD you're watching on Kick,
 resolves every available quality, and streams it straight to disk as an MP4 —
 without ever holding the whole video in memory, no matter how long it is.
 
+[![CI](https://github.com/salih-g/vodka/actions/workflows/ci.yml/badge.svg)](https://github.com/salih-g/vodka/actions/workflows/ci.yml)
+
 </div>
 
 ---
@@ -57,6 +59,15 @@ bun run zip        # packaged .zip
 
 To run without the dev server: `bun run build`, then load
 `.output/chrome-mv3` via `chrome://extensions` → Developer mode → **Load unpacked**.
+
+### Tests
+
+```bash
+bun run compile     # typecheck
+bun test            # unit tests (classify, formatting, container, download engine)
+bun run verify:mux  # run the real engine against a public HLS stream and
+                    # validate the produced fragmented MP4 (network)
+```
 
 ## Disclaimer
 

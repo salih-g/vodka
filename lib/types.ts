@@ -43,3 +43,31 @@ export interface VideoSource {
   durationMs?: number;
   thumbnail?: string;
 }
+
+export type DownloadPhase =
+  | 'idle'
+  | 'resolving'
+  | 'saving'
+  | 'downloading'
+  | 'finalizing'
+  | 'done'
+  | 'canceled'
+  | 'error';
+
+export interface DownloadProgress {
+  phase: DownloadPhase;
+  /** Segments written to disk. */
+  segmentsDone: number;
+  segmentsTotal: number;
+  /** Bytes pulled from the network. */
+  bytesDownloaded: number;
+  /** Bytes flushed to the output file. */
+  bytesWritten: number;
+  /** Rolling transfer rate in bytes/second. */
+  bytesPerSecond: number;
+  /** Estimated seconds remaining, if computable. */
+  etaSeconds?: number;
+  /** Progress as a 0..1 fraction of segment count. */
+  fraction: number;
+  error?: string;
+}

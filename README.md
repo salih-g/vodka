@@ -47,13 +47,13 @@ no DRM. Downloading a multi-hour VOD "properly" comes down to one rule:
 ## Development
 
 ```bash
-npm install
-npm run dev        # launches Chrome with the extension + HMR
-npm run build      # production build -> .output/chrome-mv3
-npm run zip        # packaged .zip
+bun install
+bun run dev        # launches Chrome with the extension + HMR
+bun run build      # production build -> .output/chrome-mv3
+bun run zip        # packaged .zip
 ```
 
-To run without the dev server: `npm run build`, then load
+To run without the dev server: `bun run build`, then load
 `.output/chrome-mv3` via `chrome://extensions` → Developer mode → **Load unpacked**.
 
 ## Disclaimer
